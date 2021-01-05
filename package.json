@@ -50,7 +50,7 @@
     "generator-nod"
   ],
   "dependencies": {
-    "axios": "0.20.0",
+    "axios": "0.21.1",
     "debug": "4.1.1",
     "runtypes": "5.0.1"
   },
