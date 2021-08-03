@@ -1,9 +1,7 @@
 {
-  "parser": "babel-eslint",
-  "extends": [
-    "airbnb-base",
-    "plugin:prettier/recommended"
-  ],
+  "parser": "@typescript-eslint/parser",
+  "extends": ["plugin:@typescript-eslint/recommended", "plugin:prettier/recommended", "plugin:jest/recommended"],
+  "plugins": ["prettier", "@typescript-eslint"],
   "env": {
     "jest": true
   },
@@ -33,18 +31,15 @@
         "@typescript-eslint"
       ],
       "rules": {
-        "no-undef": "off",
         "no-unused-vars": "off",
-        "no-restricted-globals": "off",
-        "no-useless-constructor": "off",
         "import/prefer-default-export": "off",
-        "@typescript-eslint/no-useless-constructor": "error",
         "import/extensions": "off",
-        "no-redeclare": "off",
         "@typescript-eslint/no-redeclare": [
           "error"
         ],
-        "no-shadow": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/no-useless-constructor": "error",
+        "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-shadow": [
           "error"
         ]

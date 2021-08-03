@@ -71,6 +71,7 @@ export const parseOpenAttestationRecord = (record: string): GenericObject => {
   trace(`Parsing record: ${record}`);
   const keyValuePairs = record.trim().split(" "); // tokenize into key=value elements
   const recordObject = {} as GenericObject;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore: we already checked for this token
   recordObject.type = keyValuePairs.shift();
   keyValuePairs.reduce<GenericObject>(addKeyValuePairToObject, recordObject);
@@ -80,9 +81,11 @@ export const parseOpenAttestationRecord = (record: string): GenericObject => {
 /**
  * Currying function that applies a given dnssec result
  */
-const applyDnssecResults = <T>(dnssecStatus: boolean) => (record: T): T => {
-  return { ...record, dnssec: dnssecStatus };
-};
+const applyDnssecResults =
+  <T>(dnssecStatus: boolean) =>
+  (record: T): T => {
+    return { ...record, dnssec: dnssecStatus };
+  };
 
 /**
  * Some DNS servers return TXT records with quoted strings, others don't :D

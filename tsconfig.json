@@ -1,16 +1,15 @@
 {
-    "compilerOptions": {
-      "outDir": "dist/ts",
-      "target": "es6",
-      "module": "es6",
-      "moduleResolution": "node",
-      "jsx": "react",
-      "strict": true,
-      "declaration": true,
-      "noFallthroughCasesInSwitch": true,
-      "noImplicitReturns": true,
-      "noUnusedLocals": true,
-      "noUnusedParameters": true,
-      "stripInternal": true
-    }
-  }
+  "compilerOptions": {
+    "lib": ["esnext"],
+    "target": "es2020",
+    "module": "es2020",
+    "moduleResolution": "node",
+    "strict": true,
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["./src/**/*"]
+}
