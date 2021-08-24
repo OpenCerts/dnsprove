@@ -5,7 +5,7 @@ describe("getCertStoreRecords", () => {
     type: "openatts",
     net: "ethereum",
     netId: "3",
-    dnssec: false,
+    dnssec: true,
     addr: "0x2f60375e8144e16Adf1979936301D8341D58C36C",
   };
   test("it should work", async () => {
@@ -31,7 +31,7 @@ describe("getDnsDidRecords", () => {
         algorithm: "dns-did",
         publicKey: "did:ethr:0xE712878f6E8d5d4F9e87E10DA604F9cB564C9a89#controller",
         version: "1.0",
-        dnssec: false,
+        dnssec: true,
       },
     ]);
   });
