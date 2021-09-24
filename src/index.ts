@@ -87,7 +87,8 @@ export const parseCustomDns = (customDns: CustomDNS): AxiosRequestConfig => {
     customDns.params
       ? `?${Object.entries(customDns.params)
           .reduce((acc, [k, v]) => {
-            return (acc += `${k}=${v}&`);
+            acc += `${k}=${v}&`;
+            return acc;
           }, "")
           .slice(0, -1)}`
       : ""
