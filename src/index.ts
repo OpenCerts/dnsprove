@@ -58,8 +58,46 @@ const formatDnsDidRecord = ({ a, v, p, type }: { [key: string]: string }) => {
   };
 };
 
-export const queryDns = async (domain: string): Promise<IDNSQueryResponse> => {
-  const { data } = await axios.get<IDNSQueryResponse>(`https://dns.google/resolve?name=${domain}&type=TXT`);
+export const queryGoogleDns = async (domain: string, headers: Record<string, string>): Promise<IDNSQueryResponse> => {
+  const { data } = await axios.get<IDNSQueryResponse>(`https://dns.google/resolve?name=${domain}&type=TXT`, {
+    headers,
+  });
+
+  return data;
+};
+
+export const queryCloudflareDns = async (
+  domain: string,
+  headers: Record<string, string>
+): Promise<IDNSQueryResponse> => {
+  const { data } = await axios.get<IDNSQueryResponse>(`https://1.1.1.1/dns-query?name=${domain}&type=TXT`, { headers });
+  return data;
+};
+
+export const queryCustomDns = async (
+  domain: string,
+  customDns: string,
+  headers: Record<string, string>
+): Promise<IDNSQueryResponse> => {
+  const { data } = await axios.get<IDNSQueryResponse>(`${customDns}?name=${domain}&type=TXT`, { headers });
+
+  return data;
+};
+
+export const queryDns = async (domain: string, customDns?: string): Promise<IDNSQueryResponse> => {
+  const headers = { accept: "application/dns-json" };
+  let data;
+
+  if (customDns) {
+    data = queryCustomDns(domain, customDns, headers);
+  } else {
+    try {
+      data = queryGoogleDns(domain, headers);
+    } catch (e) {
+      data = queryCloudflareDns(domain, headers);
+    }
+  }
+
   return data;
 };
 
