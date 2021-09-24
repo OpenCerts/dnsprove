@@ -1,4 +1,4 @@
-import { getDocumentStoreRecords, parseDocumentStoreResults, getDnsDidRecords } from ".";
+import { getDocumentStoreRecords, parseDocumentStoreResults, getDnsDidRecords, parseCustomDns } from ".";
 
 describe("getCertStoreRecords", () => {
   const sampleDnsTextRecordWithDnssec = {
@@ -161,5 +161,60 @@ describe("parseDocumentStoreResults", () => {
       },
     ];
     expect(parseDocumentStoreResults(sampleRecord, true)).toStrictEqual([]);
+  });
+});
+
+describe("parseCustomDns", () => {
+  test("should return a valid GET request config", () => {
+    const sampleRequestConfig = {
+      method: "GET",
+      url: "https://1.1.1.1/dns-query?name=google.com&type=TXT",
+    };
+
+    const url = "https://1.1.1.1/dns-query";
+    const method = "GET";
+    const params = {
+      name: "google.com",
+      type: "TXT",
+    };
+
+    const config = parseCustomDns({
+      url,
+      method,
+      params,
+    });
+
+    expect(sampleRequestConfig).toStrictEqual(config);
+  });
+
+  test("should return a valid POST request config", () => {
+    const sampleRequestConfig = {
+      method: "POST",
+      url: "https://1.1.1.1/dns-query?name=google.com&type=TXT",
+      headers: { accept: "application/dns-json" },
+      data: {
+        apiKey: "1234567890",
+      },
+    };
+    const url = "https://1.1.1.1/dns-query";
+    const method = "POST";
+    const params = {
+      name: "google.com",
+      type: "TXT",
+    };
+    const body = {
+      apiKey: "1234567890",
+    };
+    const headers = { accept: "application/dns-json" };
+
+    const config = parseCustomDns({
+      url,
+      method,
+      params,
+      body,
+      headers,
+    });
+
+    expect(sampleRequestConfig).toStrictEqual(config);
   });
 });

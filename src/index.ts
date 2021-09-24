@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosRequestConfig, Method } from "axios";
 import { OpenAttestationDNSTextRecord, OpenAttestationDNSTextRecordT } from "./records/dnsTxt";
 import { OpenAttestationDnsDidRecord, OpenAttestationDnsDidRecordT } from "./records/dnsDid";
 import { getLogger } from "./util/logger";
@@ -19,6 +19,14 @@ export interface IDNSQueryResponse {
 
 interface GenericObject {
   [key: string]: string;
+}
+
+export interface CustomDNS {
+  url: string;
+  method?: Method;
+  params?: Record<string, string>;
+  body?: Record<string, string>;
+  headers?: Record<string, string>;
 }
 
 /**
@@ -74,22 +82,49 @@ export const queryCloudflareDns = async (
   return data;
 };
 
-export const queryCustomDns = async (
-  domain: string,
-  customDns: string,
-  headers: Record<string, string>
-): Promise<IDNSQueryResponse> => {
-  const { data } = await axios.get<IDNSQueryResponse>(`${customDns}?name=${domain}&type=TXT`, { headers });
+export const parseCustomDns = (customDns: CustomDNS): AxiosRequestConfig => {
+  const fullPath = `${customDns.url}${
+    customDns.params
+      ? `?${Object.entries(customDns.params)
+          .reduce((acc, [k, v]) => {
+            return (acc += `${k}=${v}&`);
+          }, "")
+          .slice(0, -1)}`
+      : ""
+  }`;
+  const { body, headers } = customDns;
+  const method: Method = customDns.method || "GET";
+
+  const config = {
+    method,
+    url: fullPath,
+  };
+
+  if (body) {
+    Object.assign(config, { data: body });
+  }
+
+  if (headers) {
+    Object.assign(config, { headers });
+  }
+
+  return config;
+};
+
+export const queryCustomDns = async (customDns: CustomDNS): Promise<IDNSQueryResponse> => {
+  const config = parseCustomDns(customDns);
+
+  const { data } = await axios(config);
 
   return data;
 };
 
-export const queryDns = async (domain: string, customDns?: string): Promise<IDNSQueryResponse> => {
+export const queryDns = async (domain: string, customDns?: CustomDNS): Promise<IDNSQueryResponse> => {
   const headers = { accept: "application/dns-json" };
   let data;
 
   if (customDns) {
-    data = queryCustomDns(domain, customDns, headers);
+    data = queryCustomDns(customDns);
   } else {
     try {
       data = queryGoogleDns(domain, headers);
@@ -179,10 +214,13 @@ export const parseDnsDidResults = (recordSet: IDNSRecord[] = [], dnssec: boolean
     addr: '0x2f60375e8144e16Adf1979936301D8341D58C36C',
     dnssec: true } ]
  */
-export const getDocumentStoreRecords = async (domain: string): Promise<OpenAttestationDNSTextRecord[]> => {
+export const getDocumentStoreRecords = async (
+  domain: string,
+  customDns?: CustomDNS
+): Promise<OpenAttestationDNSTextRecord[]> => {
   trace(`Received request to resolve ${domain}`);
 
-  const results = await queryDns(domain);
+  const results = await queryDns(domain, customDns);
   const answers = results.Answer || [];
 
   trace(`Lookup results: ${JSON.stringify(answers)}`);
@@ -190,10 +228,13 @@ export const getDocumentStoreRecords = async (domain: string): Promise<OpenAttes
   return parseDocumentStoreResults(answers, results.AD);
 };
 
-export const getDnsDidRecords = async (domain: string): Promise<OpenAttestationDnsDidRecord[]> => {
+export const getDnsDidRecords = async (
+  domain: string,
+  customDns?: CustomDNS
+): Promise<OpenAttestationDnsDidRecord[]> => {
   trace(`Received request to resolve ${domain}`);
 
-  const results = await queryDns(domain);
+  const results = await queryDns(domain, customDns);
   const answers = results.Answer || [];
 
   trace(`Lookup results: ${JSON.stringify(answers)}`);
