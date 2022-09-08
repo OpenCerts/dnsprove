@@ -13,7 +13,6 @@ export enum EthereumNetworks {
   ropsten = "3",
   rinkeby = "4",
   goerli = "5",
-  kovan = "42",
   polygon = "137",
   polygonMumbai = "80001",
 }
