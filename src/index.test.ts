@@ -166,6 +166,18 @@ describe("parseDocumentStoreResults", () => {
     ];
     expect(parseDocumentStoreResults(sampleRecord, true)).toStrictEqual([]);
   });
+  test("should not return a record if netId fails number regex", () => {
+    const sampleRecord = [
+      {
+        name: "example.openattestation.com.",
+        type: 16,
+        TTL: 110,
+        data: '"openatts net=ethereum netId=0x1 addr=0x007d40224f6562461633ccfbaffd359ebb2fc9ba"',
+        dnssec: true,
+      },
+    ];
+    expect(parseDocumentStoreResults(sampleRecord, true)).toStrictEqual([]);
+  });
 });
 
 describe("queryDns", () => {
