@@ -9,8 +9,8 @@ export const EthereumAddressT = String.withConstraint((maybeAddress: string) => 
 });
 
 export const EthereumNetworkIdT = String.withConstraint((maybeNetId: string) => {
-  return /^\d+$/.test(maybeNetId)// || `${maybeNetId} is not a valid network id`;
-})
+  return /^\d+$/.test(maybeNetId) || `${maybeNetId} is not a valid network id`;
+});
 
 export const OpenAttestationDNSTextRecordT = Record({
   type: RecordTypesT,
