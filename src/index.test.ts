@@ -255,3 +255,20 @@ describe("queryDns", () => {
     }
   });
 });
+
+
+describe("getDocumentStoreRecords for Hedera", () => {
+  const sampleDnsTextRecord = {
+    type: "openatts",
+    net: "hedera",
+    netId: "296",
+    dnssec: false,
+    addr: "0x3498b8e0A00fC8c3a1f64647AC85EEE8E1baF953",
+  };
+
+  test("it should work with trustlv.org", async () => {
+    const records = await getDocumentStoreRecords("trustlv.org");
+    expect(records).toStrictEqual([sampleDnsTextRecord]);
+  });
+
+});
