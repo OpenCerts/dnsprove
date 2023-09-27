@@ -10,7 +10,7 @@ export const EthereumAddressT = String.withConstraint((maybeAddress: string) => 
 });
 
 export const HederaAccountIDT = String.withConstraint((maybeAddress: string) => {
-  return /0x[a-fA-F0-9]{40}/.test(maybeAddress) || `${maybeAddress} is not a valid ethereum address`;
+  return /0x[a-fA-F0-9]{40}/.test(maybeAddress) || `${maybeAddress} is not a valid hedera address`;
 });
 
 
