@@ -16,6 +16,7 @@ export enum EthereumNetworks {
   sepolia = "11155111",
   polygon = "137",
   polygonMumbai = "80001",
+  polygonAmoy = "80002",
   local = "1337",
 }
 
@@ -27,6 +28,7 @@ export const EthereumNetworkIdT = Union(
   Literal(EthereumNetworks.sepolia),
   Literal(EthereumNetworks.polygon),
   Literal(EthereumNetworks.polygonMumbai),
+  Literal(EthereumNetworks.polygonAmoy),
   Literal(EthereumNetworks.local)
 );
 
