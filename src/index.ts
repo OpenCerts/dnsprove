@@ -26,12 +26,17 @@ export type CustomDnsResolver = (domain: string) => Promise<IDNSQueryResponse>;
 
 export const defaultDnsResolvers: CustomDnsResolver[] = [
   async (domain) => {
-    const { data } = await axios.get(`https://dns.google/resolve?name=${domain}&type=TXT`);
+    const { data } = await axios({
+      method: "GET",
+      url: `https://dns.google/resolve?name=${domain}&type=TXT`,
+    });
 
     return data;
   },
   async (domain) => {
-    const { data } = await axios.get(`https://cloudflare-dns.com/dns-query?name=${domain}&type=TXT`, {
+    const { data } = await axios({
+      method: "GET",
+      url: `https://cloudflare-dns.com/dns-query?name=${domain}&type=TXT`,
       headers: { accept: "application/dns-json", contentType: "application/json", connection: "keep-alive" },
     });
     return data;
