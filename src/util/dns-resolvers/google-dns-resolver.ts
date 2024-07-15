@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CustomDnsResolver } from "../../index";
+import { CustomDnsResolver } from "../..";
 
 export const googleDnsResolver: CustomDnsResolver = async (domain) => {
   const { data } = await axios({
