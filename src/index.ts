@@ -1,8 +1,8 @@
-import axios from "axios";
 import { OpenAttestationDNSTextRecord, OpenAttestationDNSTextRecordT } from "./records/dnsTxt";
 import { OpenAttestationDnsDidRecord, OpenAttestationDnsDidRecordT } from "./records/dnsDid";
 import { getLogger } from "./util/logger";
 import { CodedError, DnsproveStatusCode } from "./common/error";
+import { cloudflareDnsResolver, googleDnsResolver } from "./util/dns-resolvers";
 
 const { trace } = getLogger("index");
 
@@ -24,24 +24,7 @@ interface GenericObject {
 
 export type CustomDnsResolver = (domain: string) => Promise<IDNSQueryResponse>;
 
-export const defaultDnsResolvers: CustomDnsResolver[] = [
-  async (domain) => {
-    const { data } = await axios({
-      method: "GET",
-      url: `https://dns.google/resolve?name=${domain}&type=TXT`,
-    });
-
-    return data;
-  },
-  async (domain) => {
-    const { data } = await axios({
-      method: "GET",
-      url: `https://cloudflare-dns.com/dns-query?name=${domain}&type=TXT`,
-      headers: { accept: "application/dns-json", contentType: "application/json", connection: "keep-alive" },
-    });
-    return data;
-  },
-];
+export const defaultDnsResolvers: CustomDnsResolver[] = [googleDnsResolver, cloudflareDnsResolver];
 
 /**
  * Returns true for strings that are openattestation records
@@ -176,13 +159,14 @@ export const parseDnsDidResults = (recordSet: IDNSRecord[] = [], dnssec: boolean
 /**
  * Queries a given domain and parses the results to retrieve openattestation document store records if any
  * @param domain e.g: "example.openattestation.com"
+ * @param customDnsResolvers
  * @example
  * > getDocumentStoreRecords("example.openattestation.com")
  * > [ { type: 'openatts',
-    net: 'ethereum',
-    netId: '3',
-    addr: '0x2f60375e8144e16Adf1979936301D8341D58C36C',
-    dnssec: true } ]
+ net: 'ethereum',
+ netId: '3',
+ addr: '0x2f60375e8144e16Adf1979936301D8341D58C36C',
+ dnssec: true } ]
  */
 export const getDocumentStoreRecords = async (
   domain: string,
@@ -190,7 +174,7 @@ export const getDocumentStoreRecords = async (
 ): Promise<OpenAttestationDNSTextRecord[]> => {
   trace(`Received request to resolve ${domain}`);
 
-  const dnsResolvers = customDnsResolvers || defaultDnsResolvers;
+  const dnsResolvers = customDnsResolvers ?? defaultDnsResolvers;
 
   const results = await queryDns(domain, dnsResolvers);
   const answers = results.Answer || [];
@@ -206,7 +190,7 @@ export const getDnsDidRecords = async (
 ): Promise<OpenAttestationDnsDidRecord[]> => {
   trace(`Received request to resolve ${domain}`);
 
-  const dnsResolvers = customDnsResolvers || defaultDnsResolvers;
+  const dnsResolvers = customDnsResolvers ?? defaultDnsResolvers;
 
   const results = await queryDns(domain, dnsResolvers);
   const answers = results.Answer || [];
@@ -217,3 +201,5 @@ export const getDnsDidRecords = async (
 };
 
 export { OpenAttestationDNSTextRecord, OpenAttestationDnsDidRecord };
+
+export * from "./util/dns-resolvers";
